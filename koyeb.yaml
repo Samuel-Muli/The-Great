@@ -50,4 +50,4 @@ COPY package.json ./
 RUN yarn install || npm install
 
 # Run the application
-RUN npm start || yarn start
+CMD npm start || yarn start
