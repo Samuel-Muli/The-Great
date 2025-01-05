@@ -111,11 +111,17 @@ if (mek.key && mek.key.remoteJid === 'status@broadcast' && config.AUTO_READ_STAT
 await conn.readMessages([mek.key])
 }
 //react to status
-/* if (mek.key && mek.key.remoteJid === 'status@broadcast' && config.AUTO_STATUS_REPLY === "true"){
+if (mek.key && mek.key.remoteJid === 'status@broadcast' && config.AUTO_STATUS_LIKE === "true"){
+  await conn.sendMessage(mek.key.participant, { react: { text: '💕', key: mek.key } })
+}
+//react and reply status
+if (mek.key && mek.key.remoteJid === 'status@broadcast' && config.AUTO_STATUS_REPLY === "true"){
   const user = mek.key.participant
-  //const text = `${config.AUTO_STATUS__MSG}`
-  await conn.sendMessage(user, { react: { text: '💕', key: mek.key } }, { quoted: mek })
-            } */
+  const text = config.AUTO_STATUS__MSG;
+  await conn.sendMessage(user, { text: text, react: { text: '💜', key: mek.key } }, { quoted: mek })
+  }
+
+
 const m = sms(conn, mek)
 const type = getContentType(mek.message)
 const content = JSON.stringify(mek.message)

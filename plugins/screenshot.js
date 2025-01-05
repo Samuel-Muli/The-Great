@@ -57,7 +57,7 @@ cmd(_0x39ffcf, async (_0x5820ae, _0x1f69a1, _0x3680d6, {
     };
     const _0x5c238c = {
       image: _0x270eaa,//dont touch below u dont wanna regret
-      caption: "*`💜SCREENSHOT WEBSTITE💜`*\n\n> *© Gᴇɴᴇʀᴀᴛᴇᴅ Bʏ SaMuTEch*"
+      caption: "*`💜Shotgun Suppressor SCREENSHOT WEBSTITE💜`*\n\n> *© Gᴇɴᴇʀᴀᴛᴇᴅ Bʏ Nation Protector*"
     };
     const _0x5ab83d = {
       quoted: _0x1f69a1

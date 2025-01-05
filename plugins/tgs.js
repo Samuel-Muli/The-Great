@@ -1,61 +1,39 @@
 const { cmd } = require('../command');
 const axios = require('axios');
-const { getBuffer, sleep } = require('../lib/functions'); // Importez vos fonctions utilitaires nécessaires
 
-const botToken = '891038791:AAHWB1dQd-vi0IbH2NjKYUk-hqQ8rQuzPD4'; // Remplacez par le token de votre bot Telegram
+
 
 cmd({
-  pattern: 'tgs',
-  react: '🤖',
-  desc: 'Download and send stickers from a Telegram sticker pack',
-  category: 'media',
-  use: '.tgs <sticker_pack_link>',
+  pattern: "tgs",
+  alias: ["animatedsticker"],
+  desc: "Search and fetch animated stickers (TGS) from Telegram",
+  category: "downloader",
+  react: "🎨",
   filename: __filename
-}, async (conn, mek, m, { from, l, quoted, body, args }) => {
+}, async (_0x19564c, _0x1d2bb7) => {
   try {
-    // Vérifier que l'URL est fournie
-    if (!args[0]) {
-      return conn.sendMessage(from, { text: '❌ Please provide a valid sticker pack URL.' }, { quoted: mek });
+    // Check if a search query is provided
+    if (!_0x1d2bb7) {
+      return await _0x19564c.reply("*_Please provide a name or keyword to search for stickers. Example: .tgs cats_*");
     }
 
-    const packUrl = args[0];
-    const packName = packUrl.split('/').pop(); // Récupérer le nom du pack de stickers à partir de l'URL
+    // Use Telegram API to search for stickers
+    const query = _0x1d2bb7;
+    const telegramStickerAPI = `https://t.me/addstickers/${encodeURIComponent(query)}`;
+    const response = await axios.get(telegramStickerAPI);
 
-    // Appel à l'API Telegram pour récupérer les stickers du pack
-    const apiUrl = `https://api.telegram.org/bot${botToken}/getStickerSet?name=${packName}`;
-    const response = await axios.get(apiUrl);
-
-    // Vérifier si l'API a retourné un pack valide
-    if (!response.data.ok) {
-      return conn.sendMessage(from, { text: '❌ Unable to find the sticker pack. Please check the URL.' }, { quoted: mek });
+    // Check if the sticker pack exists
+    if (response.status === 404) {
+      return await _0x19564c.reply("❌ *No sticker pack found for this keyword.*");
     }
 
-    const stickers = response.data.result.stickers;
-    if (stickers.length === 0) {
-      return conn.sendMessage(from, { text: '❌ This sticker pack does not contain any stickers.' }, { quoted: mek });
-    }
+    // Prepare the response with the sticker pack link
+    const message = `✨ *Stickers found for "${query}"* ✨\n\n🔗 [Click here to view the sticker pack](https://t.me/addstickers/${encodeURIComponent(query)})`;
 
-    // Envoi de chaque sticker dans le chat
-    for (let i = 0; i < stickers.length; i++) {
-      const stickerFileId = stickers[i].file_id;
-      const stickerData = await axios.get(`https://api.telegram.org/bot${botToken}/getFile?file_id=${stickerFileId}`);
-      const filePath = stickerData.data.result.file_path;
-      const stickerUrl = `https://api.telegram.org/file/bot${botToken}/${filePath}`;
+    await _0x19564c.reply(message);
 
-      // Télécharger le sticker
-      const stickerBuffer = await getBuffer(stickerUrl);
-
-      // Envoyer le sticker dans le chat
-      await conn.sendMessage(from, { sticker: stickerBuffer }, { quoted: mek });
-
-      // Attendre un peu avant d'envoyer le prochain sticker
-      await sleep(1000);
-    }
-
-    // Message de confirmation
-    conn.sendMessage(from, { text: '✅ Stickers have been successfully sent!' }, { quoted: mek });
-  } catch (e) {
-    console.error(e);
-    conn.sendMessage(from, { text: '❌ An error occurred while fetching the sticker pack. Please try again.' }, { quoted: mek });
+  } catch (error) {
+    console.error("Error during tgs command:", error);
+    await _0x19564c.reply("❌ *An error occurred while searching for stickers.*");
   }
-});
+})

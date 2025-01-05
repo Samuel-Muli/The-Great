@@ -24,13 +24,13 @@ cmd({
 
         // Message Alive
         const aliveMessage = `
-🌟 *The-Great STATUS* 🌟
+🌟 *Shotgun Suppressor STATUS* 🌟
 
 🕒 *Time*: ${currentTime}
 📅 *Date*: ${currentDate}
 ⏳ *Uptime*: ${runtimeHours} hours, ${runtimeMinutes} minutes, ${runtimeSeconds} seconds
 
-🤖 *Status*: *Am is Alive and Ready!*
+🤖 *Status*: *Shotgun Suppressor is Alive and Ready!*
 
 🎉 *Enjoy the Service!*
         `;

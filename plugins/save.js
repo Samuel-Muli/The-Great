@@ -2,15 +2,16 @@ const { cmd } = require('../command');
 
 cmd({
     pattern: "save",
+    react: "⏳",
     desc: "Download and directly send media back to the user",
     category: "utility",
     use: ".save (reply to media)",
     filename: __filename
-}, async (conn, mek, m, { quoted, react, sender }) => {
+}, async (conn, mek, m, { quoted, react, sender, reply }) => {
     try {
         // Vérifie si le message cité contient des médias
-        if (!quoted || !(quoted.imageMessage || quoted.videoMessage || quoted.audioMessage || quoted.documentMessage)) {
-            return react("❌"); // Réaction en cas d'erreur
+        if (!quoted || !quoted.message || !(quoted.message.imageMessage || quoted.message.videoMessage || quoted.message.audioMessage || quoted.message.documentMessage)) {
+            return await reply("❌ Please reply to a valid media message.");
         }
 
         // Réagit avec un sablier pour indiquer que l'opération est en cours
@@ -20,33 +21,34 @@ cmd({
         const mediaBuffer = await conn.downloadMediaMessage(quoted);
 
         if (!mediaBuffer) {
-            return react("❌"); // Réaction en cas d'échec du téléchargement
+            return await reply("❌ Failed to download the media.");
         }
 
         // Détecte le type de média
-        const mediaType = quoted.imageMessage
+        const mediaType = quoted.message.imageMessage
             ? "image"
-            : quoted.videoMessage
+            : quoted.message.videoMessage
             ? "video"
-            : quoted.audioMessage
+            : quoted.message.audioMessage
             ? "audio"
-            : quoted.documentMessage
+            : quoted.message.documentMessage
             ? "document"
             : null;
 
         if (!mediaType) {
-            return react("❌"); // Réaction en cas de type de média non supporté
+            return await reply("❌ Unsupported media type.");
         }
 
-        // Envoie directement le média dans la discussion
+        // Envoie directement le média dans la discussion privée de l'utilisateur
         await conn.sendMessage(sender, {
             [mediaType]: mediaBuffer,
+            caption: `Here is your ${mediaType}.`
         });
 
         // Réagit avec ✅ pour indiquer que l'opération est terminée
         await react("✅");
     } catch (e) {
         console.error("Error in save command:", e);
-        react("❌"); // Réaction en cas d'erreur
+        await reply("❌ An error occurred while processing your request.");
     }
 });
